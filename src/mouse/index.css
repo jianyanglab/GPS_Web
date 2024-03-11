@@ -1,0 +1,5 @@
+.ConcentBackColor {
+  background: linear-gradient(45deg, #0e0e0e, #cdd0d5,#0e0e0e);
+  /* background-color: radial-gradient(circle at 30% 30%, black 0%, #cdd0d5 100%); */
+ 
+}

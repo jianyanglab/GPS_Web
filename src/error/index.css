@@ -1,0 +1,20 @@
+.error-page {
+
+  .not-found-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: center; */
+    margin-top: 10%;
+    text-align: center;
+  }
+  
+.not-found-icon-container {
+    font-size: 4rem; /* 调整图标的大小 */
+    margin-bottom: 1rem;
+  }
+  
+.not-found-text {
+    font-size: 1.2rem;
+  }
+}
