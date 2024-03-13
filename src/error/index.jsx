@@ -8,7 +8,7 @@ export default class ERROR extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      num: 5
+      num: 5000
     };
   }
 

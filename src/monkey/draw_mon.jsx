@@ -3,6 +3,7 @@ import { Layout, Menu, Button, Drawer, Radio, Space, ConfigProvider } from 'antd
 import {
     DeploymentUnitOutlined,
 } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
 
 const { Sider } = Layout;
 const icon = DeploymentUnitOutlined; // 设置图标为 VideoCameraOutlined
@@ -10,6 +11,7 @@ const Draw = ({texts, setSelectedPath }) => {
     
     const [open, setOpen] = useState(false);
     const [phitems, setPhitems] = useState([]);
+    const history = useHistory();
 
     const showDrawer = () => {
         setOpen(true);
@@ -36,11 +38,29 @@ const Draw = ({texts, setSelectedPath }) => {
         setPhitems(items);//加载两次selectedPath
         // 设置点击每个形状都默认第一个片子
         if (texts[e.target.value] && phitems[0]) {
-            // setSelectedPath(`http://localhost:3000/mouse_variety/${texts[e.target.value]}/${phitems[0]['label']}.txt`);
+            
+            // if (!history_picture.current){
+            //         history_picture.current = items[0]['label']
+            // } else {
+            //     const itemValues = Object.values(items);
+            //     const isCurrentInLabels = itemValues.some(row => row.label === history_picture.current);
+            //     if (!isCurrentInLabels){
+            //         history_picture.current = items[0]['label']
+            // }
+                
+            // }
+            // setSelectedPath(`http://localhost:3000/mouse_variety/${texts[e.target.value]}/${history_picture.current}.txt`);
         }            
         })
-        .catch(error => console.log(error));     
-    };       
+        .catch(error => {
+            // 处理失败的回调函数
+            console.error(error);
+            // 跳转到其他页面
+            
+            history.push('/404');
+          }
+        );     
+    };      
 
     useEffect(() => {
         // 在组件或其他地方调用 varChange 时传递默认值

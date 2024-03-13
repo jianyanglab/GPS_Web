@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef} from 'react';
 import { Layout, Menu, Button, Drawer, Radio, Space, ConfigProvider } from 'antd';
 import {
     DeploymentUnitOutlined,
 } from '@ant-design/icons';
+import { useHistory } from 'react-router-dom';
 
 
 const { Sider } = Layout;
 const icon = DeploymentUnitOutlined; // 设置图标为 VideoCameraOutlined
+
 const Draw = ({texts, setSelectedPath }) => {
-    
+    const history_picture = useRef(null);
     const [open, setOpen] = useState(false);
     const [phitems, setPhitems] = useState([]);
+    const history = useHistory();
+    
     const showDrawer = () => {
         setOpen(true);
       };
@@ -18,6 +22,7 @@ const Draw = ({texts, setSelectedPath }) => {
         setOpen(false);
       };
     const varChange = (e) => {  
+        
     fetch(`http://localhost:3000/pictures/${texts[e.target.value]}.txt`)
         .then(response => response.text())
         .then(data => {
@@ -33,12 +38,33 @@ const Draw = ({texts, setSelectedPath }) => {
             }});
         // phitems.current = items
         setPhitems(items);//加载两次selectedPath
-        // 设置点击每个形状都默认第一个片子
+        
+        
+        // 设置点击每个trait都默认第一个片子
         if (texts[e.target.value] && phitems[0]) {
-            setSelectedPath(`http://localhost:3000/mouse_variety/${texts[e.target.value]}/${phitems[0]['label']}.txt`);
+            
+            if (!history_picture.current){
+                    history_picture.current = items[0]['label']
+            } else {
+                const itemValues = Object.values(items);
+                const isCurrentInLabels = itemValues.some(row => row.label === history_picture.current);
+                if (!isCurrentInLabels){
+                    history_picture.current = items[0]['label']
+            }
+                
+            }
+            // setSelectedPath(`http://localhost:3000/mouse_variety/${texts[e.target.value]}/${phitems[0]['label']}.txt`);
+            setSelectedPath(`http://localhost:3000/mouse_variety/${texts[e.target.value]}/${history_picture.current}.txt`);
         }            
         })
-        .catch(error => console.log(error));     
+        .catch(error => {
+            // 处理失败的回调函数
+            console.error(error);
+            // 跳转到其他页面
+            
+            history.push('/404');
+          }
+        );     
     };       
 
     useEffect(() => {
@@ -53,6 +79,7 @@ const Draw = ({texts, setSelectedPath }) => {
         const label = phitems[e.key]['label'];
         // 使用模板字符串拼接路径
         const data_path = `${baseUrl}${variety}/${label}.txt`;
+        history_picture.current = label
         setSelectedPath(data_path);
     };
 

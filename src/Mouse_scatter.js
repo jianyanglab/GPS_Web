@@ -14,7 +14,7 @@ import {
 import { ScatterChart } from 'echarts/charts';
 import { UniversalTransition } from 'echarts/features';
 import { CanvasRenderer } from 'echarts/renderers';
-import { convertLegacyProps } from 'antd/es/button';
+import { useHistory } from 'react-router-dom';
 
 echarts.use([
   TitleComponent,
@@ -31,10 +31,12 @@ echarts.use([
 ]);
 
 const Scat = (props) => {
+  
   const path = props.path;
   const chartRef = useRef(null);
   const SampleSize = useRef(null);
   const Lambda = useRef(null);
+  const history = useHistory();
 
   const handleLegendSelectChanged = (params, myChart, option) => {
     var selected = params.selected;
@@ -56,14 +58,7 @@ const Scat = (props) => {
     myChart.off('legendselectchanged');
    
   };
-
-  const handleRestoreClick = (myChart , option) => {
-    // 处理 restore 操作的逻辑
-    myChart.on('legendselectchanged', (params) => {
-      handleLegendSelectChanged(params, myChart, option);
-    });
-    // 在这里执行你想要实现的还原逻辑
-  };
+ 
   
   fetch(path)
     .then(response => response.text())
@@ -166,9 +161,8 @@ const Scat = (props) => {
           });
       });  
       
-
       var selected = {};
-      // 遍历数组，设置每个legend项的默认选中状态为false
+      // 遍历数组，设置每个legend项的默认选中状态为true
       nameleng.forEach(function(item) {
         selected[item] = true;
       });
@@ -194,15 +188,22 @@ const Scat = (props) => {
         toolbox: {
           right: '54%',
           show: true,
+          
           feature: {
             dataZoom: {
-              yAxisIndex: 'none'
+              // yAxisIndex: 'none'
             },
-
-            restore: {},
+            //bruh未生效
+            brush: {
+              show: true,
+              type: ['polygon', 'clear']
+            },
+            dataView: {},
             saveAsImage: {}
           }
         },
+        brush: {},
+        
         dataZoom: [
         {
             type: 'slider',
@@ -263,6 +264,7 @@ const Scat = (props) => {
           right: '17%', // 调整grid的右边距
           top: '6%', // 调整grid的上边距
           left: '5%'
+          
         },
         legend: {
           show: true,
@@ -271,6 +273,28 @@ const Scat = (props) => {
           textStyle: {
             color: '#333' // 设置文本颜色
           },
+          selector: [
+            {
+                // 全选
+                type: 'all',
+                // 可以是任意你喜欢的标题
+                title: 'All'
+            },
+            {
+                // 反选
+                type: 'inverse',
+                // 可以是任意你喜欢的标题
+                title: 'Invert'
+            }
+          ],
+          selectorLabel: {
+            // backgroundColor: 'red',
+            color: "black",
+            padding: [4, 16, 4, 16],
+            
+          },
+          selectorItemGap: 20,
+          selectorButtonGap: 25,
           selectedMode: 'multiple', // 设置为'multiple'表示可以选择多个按钮
           orient: 'vertical', // 设置为垂直方向
           right: '5%', // 设置右对齐
@@ -287,6 +311,7 @@ const Scat = (props) => {
           //   Scat.setOption(option);
           // }
         },
+        
         series: series,
       };  
       
@@ -295,15 +320,21 @@ const Scat = (props) => {
       myChart.on('legendselectchanged', (params) => {
         handleLegendSelectChanged(params, myChart, option);
       });
-
-      myChart.on('restore', () => handleRestoreClick(myChart, option));
+  
 
       myChart.setOption(option);
 
       return () => {
         myChart.dispose();
       };
-  }}, []);
+  }}, [])
+    .catch(error => {
+      // 处理失败的回调函数
+      console.error(error);
+      // 跳转到其他页面
+      
+      history.push('/404');
+    });    
 
   return <div ref={chartRef} style={{ height: '85vh' }} />;
 };
